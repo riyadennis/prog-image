@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"log"
 	"github.com/prog-image/handlers"
+	"github.com/prog-image/middleware"
 )
 
-func main(){
+func main() {
 	Run(8080)
 }
 
@@ -18,5 +19,5 @@ func Run(port int) {
 	route.POST("/upload", handlers.UploadHandler)
 	addr := fmt.Sprintf(":%d", port)
 	fmt.Printf("Listenning to port %s \n", addr)
-	log.Fatal(http.ListenAndServe(addr, route))
+	log.Fatal(http.ListenAndServe(addr, middleware.ConfigMiddleWare(route)))
 }

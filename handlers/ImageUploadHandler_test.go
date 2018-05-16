@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"github.com/julienschmidt/httprouter"
+	 "context"
+	"github.com/prog-image/middleware"
 )
 
 func TestUploadHandlerNoRequestBody(t *testing.T) {
@@ -45,7 +47,7 @@ func TestUploadHandlerInValidJsonRequestBody(t *testing.T) {
 	rr := httptest.NewRecorder()
 	route := httprouter.New()
 	route.POST("/upload", UploadHandler)
-	route.ServeHTTP(rr, req)
+	route.ServeHTTP(rr, req.WithContext(ManageConfig(req)))
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 func TestUploadHandlerValidRequestBody(t *testing.T) {
@@ -60,6 +62,17 @@ func TestUploadHandlerValidRequestBody(t *testing.T) {
 	rr := httptest.NewRecorder()
 	route := httprouter.New()
 	route.POST("/upload", UploadHandler)
-	route.ServeHTTP(rr, req)
+	route.ServeHTTP(rr, req.WithContext(ManageConfig(req)))
 	assert.Equal(t, http.StatusOK, rr.Code)
+}
+func ManageConfig(req *http.Request) (context.Context){
+	prog := middleware.Prog{
+		Port: 8080,
+		Folder: "../images",
+	}
+	config := middleware.Config{
+		Prog: prog,
+	}
+
+	return context.WithValue(req.Context(),"config", &config)
 }

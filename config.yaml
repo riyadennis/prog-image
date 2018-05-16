@@ -1,0 +1,4 @@
+prog:
+  port: 8080
+  folder: "/Users/riyadennis/golang/src/github.com/prog-image/images"
+  file_types: ["jpg", "png", "gif"]

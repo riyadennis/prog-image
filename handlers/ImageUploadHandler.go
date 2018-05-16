@@ -9,13 +9,14 @@ import (
 	"github.com/prog-image/service"
 	"github.com/satori/go.uuid"
 	"fmt"
+	"github.com/prog-image/middleware"
 )
 
 type UploadedImage struct {
 	Uri string `json:"uri"`
 }
 type ApiResponse struct {
-	Status int64
+	Status int
 	Detail string
 	Title  string
 }
@@ -36,9 +37,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	config, err := middleware.GetConfigFromContext(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	////need to use this to store the image in db also
 	filename := fmt.Sprintf("%s.jpg", uuid.Must(uuid.NewV1(), nil))
-	image := service.NewImage("../images", filename, uploadedImage.Uri)
+	image := service.NewImage(config.Prog.Folder, filename, uploadedImage.Uri)
 	created, err := image.CreateImage()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -52,16 +58,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	jsonResponseDecorator(res, w)
 
 }
-func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter){
-	w.Header().Set("Content-Type","application/json")
+func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), response.Status)
 		return
 	}
-
 }
-func createResponse(detail, title string, status int64) *ApiResponse {
+func createResponse(detail, title string, status int) *ApiResponse {
 	return &ApiResponse{
 		Status: status,
 		Detail: detail,
