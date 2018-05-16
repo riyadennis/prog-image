@@ -14,6 +14,11 @@ import (
 type UploadedImage struct {
 	Uri string `json:"uri"`
 }
+type ApiResponse struct {
+	Status int64
+	Detail string
+	Title  string
+}
 
 func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if r.Body == nil {
@@ -43,6 +48,23 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		w.Write([]byte("Unable to save the image"))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	//
-	//w.Write([]byte("Image saved successfully"))
+	res := createResponse("Image saved successfully", "Success", http.StatusOK)
+	jsonResponseDecorator(res, w)
+
+}
+func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter){
+	w.Header().Set("Content-Type","application/json")
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+}
+func createResponse(detail, title string, status int64) *ApiResponse {
+	return &ApiResponse{
+		Status: status,
+		Detail: detail,
+		Title:  title,
+	}
 }
