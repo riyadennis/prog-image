@@ -42,7 +42,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	////need to use this to store the image in db also
+	//TODO need to use this to store the image in db also
+	//TODO check the image type from request with the allowed types
 	filename := fmt.Sprintf("%s.jpg", uuid.Must(uuid.NewV1(), nil))
 	image := service.NewImage(config.Prog.Folder, filename, uploadedImage.Uri)
 	created, err := image.CreateImage()
