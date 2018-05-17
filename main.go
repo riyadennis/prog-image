@@ -7,10 +7,25 @@ import (
 	"log"
 	"github.com/prog-image/handlers"
 	"github.com/prog-image/middleware"
+	"context"
+	"github.com/sirupsen/logrus"
+	"github.com/prog-image/models"
 )
 
 func main() {
-	Run(8080)
+	config, err := middleware.GetConfig(context.Background())
+	if err != nil {
+		logrus.Errorf("Unable to fetch config %s", err.Error())
+	}
+	db, err := models.InitDB(config.Prog.Db)
+	if err != nil {
+		logrus.Errorf("Unable initial  %s", err.Error())
+	}
+	err = models.CreateTable(db)
+	if err != nil {
+		logrus.Errorf("Unable set up database %s", err.Error())
+	}
+	Run(config.Prog.Port)
 }
 
 func Run(port int) {

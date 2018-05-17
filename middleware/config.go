@@ -7,11 +7,10 @@ import (
 	"gopkg.in/yaml.v2"
 	"context"
 	"io"
-	"github.com/pkg/errors"
 )
 
 const (
-	defaultConfigPath = "config.yaml"
+	DefaultConfigPath = "config.yaml"
 	contextKey        = "config"
 )
 
@@ -26,8 +25,12 @@ type Prog struct {
 	Port     int      `yaml:"port"`
 	Folder   string   `yaml:"folder"`
 	FileType []string `yaml:"file_types"`
+	Db Db
 }
-
+type Db struct {
+	Source string
+	Type string
+}
 type Reader struct {
 }
 
@@ -46,16 +49,19 @@ func (fr Reader) Read(r io.Reader) (*Config, error) {
 
 	return &c, nil
 }
-func GetConfigFromContext(ctx context.Context) (*Config, error) {
+func GetConfig(ctx context.Context) (*Config, error) {
 	config, ok := ctx.Value("config").(*Config)
 	if !ok {
-		return nil, errors.New("invalid context")
+		file, _ := os.Open(DefaultConfigPath)
+
+		fileReader := Reader{}
+		config, _ = fileReader.Read(file)
 	}
 	return config, nil
 }
 func ConfigMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		file, _ := os.Open(defaultConfigPath)
+		file, _ := os.Open(DefaultConfigPath)
 
 		fileReader := Reader{}
 		config, _ := fileReader.Read(file)
