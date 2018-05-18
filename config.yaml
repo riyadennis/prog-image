@@ -3,5 +3,7 @@ prog:
   folder: "/Users/riyadennis/golang/src/github.com/prog-image/images"
   file_types: ["jpg", "png", "gif"]
   db:
-    source: "image.db"
-    type: "sqlite3"
+    source: "imagesdb"
+    type: "mysql"
+    user: "progImage"
+    password: "progImage"

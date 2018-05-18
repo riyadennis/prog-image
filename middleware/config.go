@@ -30,6 +30,8 @@ type Prog struct {
 type Db struct {
 	Source string
 	Type string
+	User string
+	Password string
 }
 type Reader struct {
 }
