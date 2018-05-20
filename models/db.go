@@ -21,15 +21,15 @@ func InitDB(db middleware.Db) (*sql.DB, error) {
 	return dbConnector,nil
 }
 func CreateTable(db *sql.DB) (error) {
-	sql_table := `
+	sqlTable := `
 	CREATE TABLE IF NOT EXISTS `+tableName+`(
-		Id TEXT NOT NULL PRIMARY KEY,
-		source TEXT,
-		imageType TEXT,
+		id varchar(100) NOT NULL PRIMARY KEY,
+		source varchar(100),
+		imageType varchar(200),
 		InsertedDatetime DATETIME
 	);
 	`
-	_, err := db.Exec(sql_table)
+	_, err := db.Exec(sqlTable)
 	if err != nil {
 		return err
 	}

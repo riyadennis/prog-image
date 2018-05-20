@@ -10,6 +10,7 @@ import (
 	"context"
 	"github.com/sirupsen/logrus"
 	"github.com/prog-image/models"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	}
 	err = models.CreateTable(db)
 	if err != nil {
-		logrus.Errorf("Unable set up database %s", err.Error())
+		logrus.Fatalf("Unable set up database %s", err.Error())
 	}
 	Run(config.Prog.Port)
 }
