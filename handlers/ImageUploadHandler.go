@@ -61,7 +61,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 	imageStruct, err := models.GetImage(filename, config.Prog.Db)
-	responseDetail := fmt.Sprintf("Image url: %s.%s", imageStruct.Id, image.ImageType)
+	responseDetail := fmt.Sprintf("Image Name: %s.%s",imageStruct.Id, image.ImageType)
 	res := createResponse(responseDetail, "Success", http.StatusOK)
 	jsonResponseDecorator(res, w)
 

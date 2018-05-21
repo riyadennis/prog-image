@@ -13,7 +13,10 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 
+	"os"
 )
+
+const testDbName = "test.db"
 
 func TestUploadHandlerNoRequestBody(t *testing.T) {
 	req, err := http.NewRequest("POST", "/upload", nil)
@@ -68,10 +71,11 @@ func TestUploadHandlerValidRequestBody(t *testing.T) {
 	route.POST("/upload", UploadHandler)
 	ctx := ManageConfig(req)
 	route.ServeHTTP(rr, req.WithContext(ctx))
+	os.Remove(testDbName)
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
 func ManageConfig(req *http.Request) (context.Context){
-	db := middleware.Db{Source: "test.db", Type: "sqlite3"}
+	db := middleware.Db{Source: testDbName, Type: "sqlite3"}
 	prog := middleware.Prog{
 		Port: 8080,
 		Folder: "../images",
