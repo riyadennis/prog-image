@@ -76,3 +76,6 @@ func ManageConfig(req *http.Request) (context.Context){
 
 	return context.WithValue(req.Context(),"config", &config)
 }
+func TestSaveImage(t *testing.T) {
+
+}

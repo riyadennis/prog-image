@@ -10,6 +10,8 @@ import (
 	"github.com/satori/go.uuid"
 	"fmt"
 	"github.com/prog-image/middleware"
+	"github.com/prog-image/models"
+	"github.com/sirupsen/logrus"
 )
 
 type UploadedImage struct {
@@ -37,7 +39,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	config, err := middleware.GetConfig(r.Context())
+	config, err := middleware.GetConfig()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -55,9 +57,13 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		w.Write([]byte("Unable to save the image"))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	SaveImage(filename, uploadedImage.Uri, config.Prog.Db)
 	res := createResponse("Image saved successfully", "Success", http.StatusOK)
 	jsonResponseDecorator(res, w)
 
+}
+func SaveImage(filename, uri string, configDb middleware.Db) (bool){
+	return models.SaveImage(filename, uri, configDb)
 }
 func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
