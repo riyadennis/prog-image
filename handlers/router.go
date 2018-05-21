@@ -4,7 +4,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"fmt"
 	"net/http"
-	"github.com/prog-image/middleware"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,5 +13,5 @@ func Run(port int) {
 	route.POST("/upload", UploadHandler)
 	addr := fmt.Sprintf(":%d", port)
 	fmt.Printf("Listenning to port %s \n", addr)
-	logrus.Fatal(http.ListenAndServe(addr, middleware.ConfigMiddleWare(route)))
+	logrus.Fatal(http.ListenAndServe(addr, route))
 }

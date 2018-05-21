@@ -20,9 +20,10 @@ const (
 )
 
 func MigrateUp(db *sql.DB, databaseName string) {
-	fmt.Print("Running migrations")
+	fmt.Println("Running migrations ..")
 	migrate := setUpForMigration(db, databaseName)
 	migrate.Steps(step)
+	fmt.Println("Done")
 }
 func setUpForMigration(db *sql.DB, databaseName string)(*migrate.Migrate){
 	migrationConfig := &mysql.Config{}
@@ -38,7 +39,8 @@ func setUpForMigration(db *sql.DB, databaseName string)(*migrate.Migrate){
 	return migrate
 }
 func MigrateDown(db *sql.DB, databaseName string){
-	fmt.Print("Undoing  migrations")
+	fmt.Println("Undoing  migrations")
 	migrate := setUpForMigration(db, databaseName)
 	migrate.Down()
+	fmt.Println("Done")
 }

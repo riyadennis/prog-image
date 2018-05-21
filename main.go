@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/prog-image/middleware"
-	"context"
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -13,10 +12,13 @@ import (
 )
 
 func main() {
-	config, err := middleware.GetConfig(context.Background())
+	config, err := middleware.GetConfig()
 	if err != nil {
 		logrus.Errorf("Unable to fetch config %s", err.Error())
 	}
-	cmd.ExecuteCommand(os.Args, config)
+	if len(os.Args) > 2 {
+		cmd.ExecuteCommand(os.Args, config)
+		os.Exit(0)
+	}
 	handlers.Run(config.Prog.Port)
 }

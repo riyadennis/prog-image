@@ -17,12 +17,3 @@ func TestInitDBWithCorrectDriverType(t *testing.T) {
 	_, err := InitDB(db)
 	assert.NoError(t, err)
 }
-func TestCreateTable(t *testing.T) {
-	db := middleware.Db{Source: "test.db", Type:"sqlite3"}
-	dbConnector, err := InitDB(db)
-	assert.NoError(t, err)
-	err = CreateTable(dbConnector)
-	assert.NoError(t, err)
-	_, err = dbConnector.Query("SELECT * FROM " + tableName)
-	assert.NoError(t, err)
-}
