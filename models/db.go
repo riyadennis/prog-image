@@ -5,17 +5,11 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/prog-image/middleware"
 	"fmt"
-	"time"
+	"github.com/prog-image/service"
 )
 
 const tableName = "images"
 
-type Image struct {
-	Id               string
-	Source           string
-	ImageType        string
-	InsertedDatetime time.Time
-}
 
 func InitDB(db middleware.Db) (*sql.DB, error) {
 	//for mysql
@@ -36,6 +30,7 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 		logrus.Errorf("Unable to save image details %s", err.Error())
 		return err
 	}
+	//TODO need tp work on the image type
 	query := "INSERT INTO " + tableName + "(id,source,imageType) VALUES('" + filename + "', '" + uri + "', 'jpg')"
 	res, err := db.Exec(query)
 	if err != nil {
@@ -50,9 +45,9 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 	return nil
 }
 
-func GetImage(fileName string, confDb middleware.Db) (*Image, error) {
+func GetImage(fileName string, confDb middleware.Db) (*service.Image, error) {
 	var source, imageType string
-	var image Image
+	var image service.Image
 	db, err := InitDB(confDb)
 	if err != nil {
 		logrus.Errorf("Unable to get image details %s", err.Error())

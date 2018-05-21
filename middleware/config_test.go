@@ -4,8 +4,6 @@ import (
 	"testing"
 	"strings"
 	"github.com/stretchr/testify/assert"
-	"context"
-	"github.com/julienschmidt/httprouter"
 )
 
 func TestFileReader_ReadInvalidData(t *testing.T) {

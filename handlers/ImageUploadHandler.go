@@ -38,14 +38,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	config, err := middleware.GetConfig()
+	config, err := middleware.GetConfigFromContext(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	//TODO need to use this to store the image in db also
 	//TODO check the image type from request with the allowed types
-	filename := fmt.Sprintf("%s.jpg", uuid.Must(uuid.NewV1(), nil))
+	filename := fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
 	image := service.NewImage(config.Prog.Folder, filename, uploadedImage.Uri)
 	created, err := image.CreateImage()
 	if err != nil {
@@ -56,8 +56,14 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		w.Write([]byte("Unable to save the image"))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	SaveImage(filename, uploadedImage.Uri, config.Prog.Db)
-	res := createResponse("Image saved successfully", "Success", http.StatusOK)
+	err = SaveImage(filename, uploadedImage.Uri, config.Prog.Db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	imageStruct, err := models.GetImage(filename, config.Prog.Db)
+	responseDetail := fmt.Sprintf("Image url: %s.%s", imageStruct.Id, image.ImageType)
+	res := createResponse(responseDetail, "Success", http.StatusOK)
 	jsonResponseDecorator(res, w)
 
 }

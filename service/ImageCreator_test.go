@@ -13,10 +13,10 @@ func TestCreateImageWithInvalidDirectory(t *testing.T) {
 	assert.Equal(t, false, created)
 }
 
-func TestCreateImageWithInvalidFileName(t *testing.T) {
+func TestCreateImageWithInvalidFileType(t *testing.T) {
 	i := NewImage("../images", "testfile", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg")
+	i.ImageType = "invalid"
 	created, error := i.CreateImage()
-
 	assert.Error(t, error)
 	assert.Equal(t, false, created)
 }

@@ -9,6 +9,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 	 "context"
 	"github.com/prog-image/middleware"
+	"github.com/prog-image/models"
+
+	_ "github.com/mattn/go-sqlite3"
+
 )
 
 func TestUploadHandlerNoRequestBody(t *testing.T) {
@@ -62,19 +66,25 @@ func TestUploadHandlerValidRequestBody(t *testing.T) {
 	rr := httptest.NewRecorder()
 	route := httprouter.New()
 	route.POST("/upload", UploadHandler)
-	route.ServeHTTP(rr, req.WithContext(ManageConfig(req)))
+	ctx := ManageConfig(req)
+	route.ServeHTTP(rr, req.WithContext(ctx))
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
 func ManageConfig(req *http.Request) (context.Context){
+	db := middleware.Db{Source: "test.db", Type: "sqlite3"}
 	prog := middleware.Prog{
 		Port: 8080,
 		Folder: "../images",
+		Db: db,
 	}
 	config := middleware.Config{
 		Prog: prog,
 	}
+	dbConnec, _ := models.InitDB(db)
+	statement, _ := dbConnec.Prepare("CREATE TABLE IF NOT EXISTS  images(id varchar(100) NOT NULL PRIMARY KEY,source varchar(100),imageType varchar(200),InsertedDatetime DATETIME);")
+	statement.Exec()
 
-	return context.WithValue(req.Context(),"config", &config)
+	return context.WithValue(req.Context(), middleware.ContextKey, config)
 }
 func TestSaveImage(t *testing.T) {
 

@@ -6,8 +6,8 @@ import (
 	"io"
 	"fmt"
 	"github.com/pkg/errors"
-	"strings"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type ImageCreator interface {
@@ -15,21 +15,25 @@ type ImageCreator interface {
 }
 
 type Image struct {
+	Id       string
 	Path     string
-	FileName string
 	Source   string
+	ImageType        string
+	InsertedDatetime time.Time
 }
 
 func NewImage(path, fileName, source string) (*Image) {
 	return &Image{
 		Path:     path,
-		FileName: fileName,
+		Id: fileName,
 		Source:   source,
+		ImageType: "jpg",
 	}
 }
 
 func (i Image) CreateImage() (bool, error) {
-	fileNameWithPath := validateFileInfo(i.Path, i.FileName)
+	fileNameWithPath := validateFileInfo(i.Path, i.Id, i.ImageType)
+
 	if fileNameWithPath == "" {
 		return false, errors.New("Invalid file or path")
 	}
@@ -40,13 +44,13 @@ func (i Image) CreateImage() (bool, error) {
 	defer img.Close()
 	return getContentAndCopy(i.Source, img)
 }
-func validateFileInfo(path, fileName string) (string) {
-	fileNameWithPath := fmt.Sprintf("%s/%s", path, fileName)
+func validateFileInfo(path, fileName,fileTYpe string) (string) {
+	fileNameWithPath := fmt.Sprintf("%s/%s.%s", path, fileName, fileTYpe)
 	if validatePath(path) == false {
 		logrus.Errorf("Invalid file path %s", path)
 		return ""
 	}
-	if validateFileName(fileName) == false {
+	if validateFileType(fileTYpe) == false {
 		logrus.Errorf("Invalid file Name %s", fileName)
 		return ""
 	}
@@ -61,6 +65,7 @@ func createBlankFile(fileName string) (*os.File, error) {
 	return img, nil
 }
 func getContentAndCopy(source string, img *os.File) (bool, error) {
+	fmt.Sprintf("%v", source)
 	resp, err := http.Get(source)
 	if resp == nil || err != nil {
 		logrus.Errorf("Unable to get the file from the url provided - %s", err.Error())
@@ -81,13 +86,9 @@ func getContentAndCopy(source string, img *os.File) (bool, error) {
 	return true, nil
 }
 
-func validateFileName(fileName string) (bool) {
-	fileExt := strings.LastIndex(fileName, ".")
-	if fileExt < 0 {
-		return false
-	}
-	fileExtension := fileName[fileExt+1:len(fileName)]
-	if fileExtension != "jpg" {
+func validateFileType(fileType string) (bool) {
+	//TODO need to add other file types from config
+	if fileType != "jpg" {
 		return false
 	}
 

@@ -53,13 +53,13 @@ func TestGetImageWithTable(t *testing.T) {
 }
 func setUpDb() (middleware.Db){
 	db := middleware.Db{Source: "test.db", Type: "sqlite3"}
-	createTable(db)
+	CreateTable(db)
 	return db
 }
 func tearDown(){
 	os.Remove(testdbName)
 }
-func createTable(db middleware.Db){
+func CreateTable(db middleware.Db){
 	dbConnec, _ := InitDB(db)
 	statement, _ := dbConnec.Prepare("CREATE TABLE IF NOT EXISTS "+tableName+"(id varchar(100) NOT NULL PRIMARY KEY,source varchar(100),imageType varchar(200),InsertedDatetime DATETIME);")
 	statement.Exec()

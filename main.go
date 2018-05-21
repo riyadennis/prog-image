@@ -20,5 +20,5 @@ func main() {
 		cmd.ExecuteCommand(os.Args, config)
 		os.Exit(0)
 	}
-	handlers.Run(config.Prog.Port)
+	handlers.Run(config)
 }

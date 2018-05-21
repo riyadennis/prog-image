@@ -5,11 +5,13 @@ import (
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"io"
+	"net/http"
+	"context"
 )
 
 const (
 	DefaultConfigPath = "config.yaml"
-	contextKey        = "config"
+	ContextKey = "config"
 )
 
 type ConfigReader interface {
@@ -49,10 +51,31 @@ func (fr Reader) Read(r io.Reader) (*Config, error) {
 
 	return &c, nil
 }
-func GetConfig() (*Config, error) {
-	file, _ := os.Open(DefaultConfigPath)
+func GetConfigFromContext(ctx context.Context) (*Config, error){
+	config, ok := ctx.Value(ContextKey).(Config)
 
+	if !ok {
+		config, err := GetConfig()
+		return config, err
+	}
+	return &config, nil
+}
+func GetConfig() (*Config, error) {
+	file, err := os.Open(DefaultConfigPath)
+	if err != nil{
+		return nil, err
+	}
 	fileReader := Reader{}
 	config, err := fileReader.Read(file)
+	if err != nil{
+		return nil, err
+	}
 	return config, err
+}
+func ConfigMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		config, _ := GetConfig()
+		newCtx := context.WithValue(r.Context(),ContextKey, config)
+		next.ServeHTTP(w, r.WithContext(newCtx))
+	})
 }
