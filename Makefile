@@ -11,3 +11,9 @@ test:
 
 run:
 	go run $(GOFILES) server
+
+migrate:
+	go run $(GOFILES) main.go migrate up
+
+migrate_down:
+	go run main.go migrate down
