@@ -9,12 +9,14 @@ import (
 )
 
 const tableName = "images"
-type Image struct{
-	Id string
-	Source string
-	ImageType string
+
+type Image struct {
+	Id               string
+	Source           string
+	ImageType        string
 	InsertedDatetime time.Time
 }
+
 func InitDB(db middleware.Db) (*sql.DB, error) {
 	//for mysql
 	dbConnectionString := fmt.Sprintf("%s:%s@/%s?multiStatements=true", db.User, db.Password, db.Source)
@@ -34,13 +36,8 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 		logrus.Errorf("Unable to save image details %s", err.Error())
 		return err
 	}
-	query := "INSERT INTO "+tableName+"(id,source,imageType, InsertedDatetime) VALUES($1, $2, $3, $4)"
-	res, err := db.Exec(query,
-		filename,
-		uri,
-		"jpg",
-		time.Now(),
-	)
+	query := "INSERT INTO " + tableName + "(id,source,imageType) VALUES('" + filename + "', '" + uri + "', 'jpg')"
+	res, err := db.Exec(query)
 	if err != nil {
 		logrus.Errorf("Unable to save image details %s", err.Error())
 		return err
@@ -53,7 +50,7 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 	return nil
 }
 
-func GetImage(fileName string, confDb middleware.Db) (*Image, error){
+func GetImage(fileName string, confDb middleware.Db) (*Image, error) {
 	var source, imageType string
 	var image Image
 	db, err := InitDB(confDb)
@@ -61,7 +58,7 @@ func GetImage(fileName string, confDb middleware.Db) (*Image, error){
 		logrus.Errorf("Unable to get image details %s", err.Error())
 		return nil, err
 	}
-	query := "SELECT source,imageType from "+tableName+" where id = '"+fileName+"'"
+	query := "SELECT source,imageType from " + tableName + " where id = '" + fileName + "'"
 	row := db.QueryRow(query)
 	err = row.Scan(&source, &imageType)
 	if err != nil {
@@ -71,5 +68,5 @@ func GetImage(fileName string, confDb middleware.Db) (*Image, error){
 	image.Source = source
 	image.ImageType = imageType
 	image.Id = fileName
-	return &image,nil
+	return &image, nil
 }

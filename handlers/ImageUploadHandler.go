@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"github.com/prog-image/middleware"
 	"github.com/prog-image/models"
-	"github.com/sirupsen/logrus"
 )
 
 type UploadedImage struct {
@@ -62,8 +61,12 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	jsonResponseDecorator(res, w)
 
 }
-func SaveImage(filename, uri string, configDb middleware.Db) (bool){
-	return models.SaveImage(filename, uri, configDb)
+func SaveImage(filename, uri string, configDb middleware.Db) (error){
+	err :=  models.SaveImage(filename, uri, configDb)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
