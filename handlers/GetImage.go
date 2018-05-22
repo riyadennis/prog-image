@@ -82,6 +82,10 @@ func CreateNewImageForImageType(requestImageId, requestImageType, existingImageT
 	if err != nil {
 		return err
 	}
+	err = models.SaveImageType(requestImageId, requestImageType, config.Prog.Db)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 func (fc FileConverter) ConvertFileFromOnTypeToAnother() error {
