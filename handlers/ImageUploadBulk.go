@@ -17,7 +17,7 @@ type Uploader interface {
 	Upload(filename, url string, config *middleware.Config, imageType string) (bool, error)
 	GetFileName() string
 }
-type Uploaded struct {
+type UploadHelper struct {
 	FileName string
 }
 type UploadedImages struct {
@@ -45,7 +45,7 @@ func UploadBulkHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	u := Uploaded{}
+	u := UploadHelper{}
 	builkUploaded, err := BulkUpload(u, uploadedImages, config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -79,10 +79,10 @@ func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) (b
 	return true, nil
 
 }
-func(u Uploaded) GetFileName() string{
+func(u UploadHelper) GetFileName() string{
 	return fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
 }
-func (u Uploaded) Upload(filename, url string, config *middleware.Config, imageType string) (bool, error) {
+func (u UploadHelper) Upload(filename,url string, config *middleware.Config, imageType string) (bool, error) {
 	image := service.NewImage(filename, url, imageType)
 	createdImage, err := image.CreateImage(config)
 	if err != nil || createdImage == false{

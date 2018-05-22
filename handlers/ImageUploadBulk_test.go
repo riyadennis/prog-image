@@ -58,7 +58,7 @@ func TestUploadBulkHandlerWithValidRequestBody(t *testing.T) {
 	assert.Equal(t, writer.Code, http.StatusOK)
 }
 func TestUploaded_UploadInvalidFileAndPath(t *testing.T) {
-	u := Uploaded{}
+	u := UploadHelper{}
 	config := &middleware.Config{}
 	uploaded, err := u.Upload("test", "test", config, "jpg")
 	assert.Error(t, err)

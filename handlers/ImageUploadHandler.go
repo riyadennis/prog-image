@@ -38,7 +38,6 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	//TODO check the image type from request with the allowed types
 	filename := fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
 	image := service.NewImage(filename, requestImage.Uri, requestImage.ImageType)
 	created, err := image.CreateImage(config)

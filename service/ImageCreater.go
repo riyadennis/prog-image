@@ -64,7 +64,6 @@ func createBlankFile(fileName string) (*os.File, error) {
 	return img, nil
 }
 func getContentAndCopy(source string, img *os.File) (bool, error) {
-	fmt.Sprintf("%v", source)
 	resp, err := http.Get(source)
 	if resp == nil || err != nil {
 		logrus.Errorf("Unable to get the file from the url provided - %s", err.Error())

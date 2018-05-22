@@ -10,7 +10,7 @@ import (
 
 
 func TestFileServer(t *testing.T) {
-	req, err := http.NewRequest("GET", "/testfile.jpg.jpg", nil)
+	req, err := http.NewRequest("GET", "/testfile.jpg", nil)
 
 	if err != nil {
 		t.Fatal(err)
