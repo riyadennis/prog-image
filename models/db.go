@@ -31,7 +31,7 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 		return err
 	}
 	//TODO need tp work on the image type
-	query := "INSERT INTO " + tableName + "(id,source,imageType) VALUES('" + filename + "', '" + uri + "', 'jpg')"
+	query := "INSERT INTO " + tableName + "(id,source) VALUES('" + filename + "', '" + uri + "')"
 	res, err := db.Exec(query)
 	if err != nil {
 		logrus.Errorf("Unable to save image details %s", err.Error())
@@ -46,22 +46,21 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 }
 
 func GetImage(fileName string, confDb middleware.Db) (*service.Image, error) {
-	var source, imageType string
+	var source string
 	var image service.Image
 	db, err := InitDB(confDb)
 	if err != nil {
 		logrus.Errorf("Unable to get image details %s", err.Error())
 		return nil, err
 	}
-	query := "SELECT source,imageType from " + tableName + " where id = '" + fileName + "'"
+	query := "SELECT source from " + tableName + " where id = '" + fileName + "'"
 	row := db.QueryRow(query)
-	err = row.Scan(&source, &imageType)
+	err = row.Scan(&source)
 	if err != nil {
 		logrus.Errorf("Unable to get image details %s", err.Error())
 		return nil, err
 	}
 	image.Source = source
-	image.ImageType = imageType
 	image.Id = fileName
 	return &image, nil
 }

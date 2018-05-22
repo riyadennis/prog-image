@@ -11,6 +11,7 @@ import (
 func Run(config *middleware.Config) {
 	route := httprouter.New()
 	route.GET("/healthcheck", HealthCheck)
+	route.GET("/images/:image_id", GetImageHandler)
 	route.POST("/upload", UploadHandler)
 	route.POST("/upload/bulk", UploadBulkHandler)
 
