@@ -84,12 +84,11 @@ func ManageConfig(req *http.Request) (context.Context){
 	config := middleware.Config{
 		Prog: prog,
 	}
+	setUpTestDB(db)
+	return context.WithValue(req.Context(), middleware.ContextKey, config)
+}
+func setUpTestDB(db middleware.Db){
 	dbConnec, _ := models.InitDB(db)
 	statement, _ := dbConnec.Prepare("CREATE TABLE IF NOT EXISTS  images(id varchar(100) NOT NULL PRIMARY KEY,source varchar(100),imageType varchar(200),InsertedDatetime DATETIME);")
 	statement.Exec()
-
-	return context.WithValue(req.Context(), middleware.ContextKey, config)
-}
-func TestSaveImage(t *testing.T) {
-
 }

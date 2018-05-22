@@ -12,6 +12,7 @@ func Run(config *middleware.Config) {
 	route := httprouter.New()
 	route.GET("/healthcheck", HealthCheck)
 	route.POST("/upload", UploadHandler)
+	route.POST("/upload/bulk", UploadBulkHandler)
 
 	fileConf := &FileConf{
 		path: "images",
