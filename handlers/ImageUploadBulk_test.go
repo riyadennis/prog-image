@@ -64,11 +64,16 @@ func TestUploaded_UploadInvalidFileAndPath(t *testing.T) {
 
 type MockUploader struct {
 	mock.Mock
+	FileName string
 }
 
 func (m MockUploader) Upload(filename, url, path string) (bool, error) {
 	args := m.Called(filename, url, path)
 	return args.Bool(0), args.Error(1)
+}
+func (m MockUploader) GetFileName() (string) {
+	args := m.Called()
+	return args.String(0)
 }
 func TestBulkUploadWithInvalidImagesSlice(t *testing.T) {
 	m := MockUploader{}
@@ -85,7 +90,9 @@ func TestBulkUploadWithValidImageSlice(t *testing.T) {
 	}
 	images := UploadedImages{Images: uImage}
 	m := MockUploader{}
+	m.FileName = "testfile"
 	m.On("Upload", "testfile", uImage[0].Uri, "path").Return(true, nil)
+	m.On("GetFileName").Return("testfile")
 	db := middleware.Db{Source: testDbName, Type: "sqlite3"}
 	conf := &middleware.Config{
 		Prog: middleware.Prog{

@@ -16,6 +16,7 @@ import (
 
 type Uploader interface {
 	Upload(filename, url, path string) (bool, error)
+	GetFileName() string
 }
 type Uploaded struct {
 	FileName string
@@ -45,7 +46,7 @@ func UploadBulkHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	u := Uploaded{FileName: fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))}
+	u := Uploaded{}
 	builkUploaded, err := BulkUpload(u, uploadedImages, config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -61,23 +62,26 @@ func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) (b
 		return false, errors.New("Invalid images")
 	}
 	for _, image := range images.Images{
-		filename := fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
-		uploaded, err := u.Upload(filename, image.Uri, config.Prog.Folder)
+		fileName := u.GetFileName()
+		uploaded, err := u.Upload(fileName, image.Uri, config.Prog.Folder)
 		if err != nil {
 			return false, err
 		}
-		err =  models.SaveImage(filename, image.Uri, config.Prog.Db)
+		err =  models.SaveImage(fileName, image.Uri, config.Prog.Db)
 		if err != nil {
 			return false, err
 		}
 		if uploaded {
-			logrus.Infof("Successfully uploaded from url %s, with filename %s",image.Uri, filename)
+			logrus.Infof("Successfully uploaded from url %s, with filename %s",image.Uri, fileName)
 		}
 		//clearing image struct
 		image = nil
 	}
 	return true, nil
 
+}
+func(u Uploaded) GetFileName() string{
+	return fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
 }
 func (u Uploaded) Upload(filename, url, path string) (bool, error) {
 	image := service.NewImage(path, filename, url)
