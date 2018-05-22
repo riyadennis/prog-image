@@ -15,7 +15,7 @@ import (
 )
 
 type Uploader interface {
-	Upload(filename, url, path string) (bool, error)
+	Upload(filename, url, path, imageType string) (bool, error)
 	GetFileName() string
 }
 type Uploaded struct {
@@ -63,7 +63,7 @@ func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) (b
 	}
 	for _, image := range images.Images{
 		fileName := u.GetFileName()
-		uploaded, err := u.Upload(fileName, image.Uri, config.Prog.Folder)
+		uploaded, err := u.Upload(fileName, image.Uri, config.Prog.Folder, image.ImageType)
 		if err != nil {
 			return false, err
 		}
@@ -83,8 +83,8 @@ func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) (b
 func(u Uploaded) GetFileName() string{
 	return fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
 }
-func (u Uploaded) Upload(filename, url, path string) (bool, error) {
-	image := service.NewImage(path, filename, url)
+func (u Uploaded) Upload(filename, url, path, imageType string) (bool, error) {
+	image := service.NewImage(path, filename, url, imageType)
 	createdImage, err := image.CreateImage()
 	if err != nil || createdImage == false{
 		return false,err

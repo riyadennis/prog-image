@@ -59,7 +59,8 @@ func TestUploadHandlerInValidJsonRequestBody(t *testing.T) {
 }
 func TestUploadHandlerValidRequestBody(t *testing.T) {
 	json := `{
-	"uri": "https://images.pexels.com/photos/36764/marguerite-daisy-beautiful-beauty.jpg"
+	"uri": "https://images.pexels.com/photos/36764/marguerite-daisy-beautiful-beauty.jpg",
+	"type": "jpg"
 }`
 	body := strings.NewReader(json)
 	req, err := http.NewRequest("POST", "/upload", body)

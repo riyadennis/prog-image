@@ -15,6 +15,7 @@ import (
 
 type RequestImage struct {
 	Uri string `json:"uri"`
+	ImageType string `json:"type"`
 }
 type ApiResponse struct {
 	Status int
@@ -27,13 +28,13 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	uploaded, err := ioutil.ReadAll(r.Body)
+	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	uploadedImage := RequestImage{}
-	err = json.Unmarshal(uploaded, &uploadedImage)
+	requestImage := RequestImage{}
+	err = json.Unmarshal(requestBody, &requestImage)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -45,7 +46,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	}
 	//TODO check the image type from request with the allowed types
 	filename := fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
-	image := service.NewImage(config.Prog.Folder, filename, uploadedImage.Uri)
+	image := service.NewImage(config.Prog.Folder, filename, requestImage.Uri, requestImage.ImageType)
 	created, err := image.CreateImage()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -55,7 +56,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		w.Write([]byte("Unable to save the image"))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	err =  models.SaveImage(filename, uploadedImage.Uri, config.Prog.Db)
+	err =  models.SaveImage(filename, requestImage.Uri, config.Prog.Db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

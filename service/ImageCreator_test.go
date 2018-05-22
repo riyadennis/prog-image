@@ -6,7 +6,7 @@ import (
 )
 
 func TestCreateImageWithInvalidDirectory(t *testing.T) {
-	i := NewImage("dd", "testfile.png", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg")
+	i := NewImage("dd", "testfile.png", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg", "jpg")
 	created, error := i.CreateImage()
 
 	assert.Error(t, error)
@@ -14,7 +14,7 @@ func TestCreateImageWithInvalidDirectory(t *testing.T) {
 }
 
 func TestCreateImageWithInvalidFileType(t *testing.T) {
-	i := NewImage("../images", "testfile", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg")
+	i := NewImage("../images", "testfile", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg", "jpg")
 	i.ImageType = "invalid"
 	created, error := i.CreateImage()
 	assert.Error(t, error)
@@ -22,14 +22,14 @@ func TestCreateImageWithInvalidFileType(t *testing.T) {
 }
 
 func TestCreateImageWithValidFileName(t *testing.T) {
-	i := NewImage("../images", "testfile.jpg", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg")
+	i := NewImage("../images", "testfile.jpg", "https://fyf.tac-cdn.net/images/products/large/BF116-11KM.jpg", "jpg")
 	created, error := i.CreateImage()
 
 	assert.NoError(t, error)
 	assert.Equal(t, true, created)
 }
 func TestCreateImageWithInvalidSource(t *testing.T) {
-	i := NewImage("../images", "testfile.jpg", "http:116-11KM.jpg")
+	i := NewImage("../images", "testfile.jpg", "http:116-11KM.jpg", "jpg")
 	created, error := i.CreateImage()
 
 	assert.Error(t, error)

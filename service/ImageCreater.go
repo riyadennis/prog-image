@@ -22,12 +22,12 @@ type Image struct {
 	InsertedDatetime time.Time
 }
 
-func NewImage(path, fileName, source string) (*Image) {
+func NewImage(path, fileName, source, imageType string) (*Image) {
 	return &Image{
 		Path:     path,
 		Id: fileName,
 		Source:   source,
-		ImageType: "jpg",
+		ImageType: imageType,
 	}
 }
 

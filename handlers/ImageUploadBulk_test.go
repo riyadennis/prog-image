@@ -34,10 +34,12 @@ func TestUploadBulkHandlerWithValidRequestBody(t *testing.T) {
 	"images":
 	[
 		{
-			"uri": "https://images.pexels.com/photos/36764/marguerite-daisy-beautiful-beauty.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+			"uri": "https://images.pexels.com/photos/36764/marguerite-daisy-beautiful-beauty.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+			"type": "jpg"
 		},
 		{
-			"uri": "https://cdn.flowercompany.ca/wp-content/uploads/2017/01/My-Heart-to-Yours-497x600.jpg"
+			"uri": "https://cdn.flowercompany.ca/wp-content/uploads/2017/01/My-Heart-to-Yours-497x600.jpg",
+			"type": "jpg"
 		}
 	]
 }
@@ -57,7 +59,7 @@ func TestUploadBulkHandlerWithValidRequestBody(t *testing.T) {
 }
 func TestUploaded_UploadInvalidFileAndPath(t *testing.T) {
 	u := Uploaded{}
-	uploaded, err := u.Upload("test", "test", "invalid")
+	uploaded, err := u.Upload("test", "test", "invalid", "jpg")
 	assert.Error(t, err)
 	assert.False(t, uploaded)
 }
@@ -67,7 +69,7 @@ type MockUploader struct {
 	FileName string
 }
 
-func (m MockUploader) Upload(filename, url, path string) (bool, error) {
+func (m MockUploader) Upload(filename, url, path, imageType string) (bool, error) {
 	args := m.Called(filename, url, path)
 	return args.Bool(0), args.Error(1)
 }
@@ -87,6 +89,7 @@ func TestBulkUploadWithValidImageSlice(t *testing.T) {
 	uImage := make([]*RequestImage, 1)
 	uImage[0] = &RequestImage{
 		Uri: "https://cdn.flowercompany.ca/wp-content/uploads/2017/01/My-Heart-to-Yours-497x600.jpg",
+		ImageType: "jpg",
 	}
 	images := UploadedImages{Images: uImage}
 	m := MockUploader{}
