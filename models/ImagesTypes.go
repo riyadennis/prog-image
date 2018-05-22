@@ -31,13 +31,13 @@ func SaveImageType(imageId, imageType string, confDb middleware.Db) (error) {
 	}
 	return nil
 }
-func GetImageType(imageId string, confDb middleware.Db) (*ImageType, error) {
+func GetImageType(imageId string, confDb middleware.Db) (string, error) {
 	var imageType string
 	var imageTypeStruct ImageType
 	db, err := InitDB(confDb)
 	if err != nil {
 		logrus.Errorf("Unable to get image details %s", err.Error())
-		return nil, err
+		return "", err
 	}
 
 	query := "SELECT image_type from " + imageTypeTableName + " where id = '" + imageId + "'"
@@ -45,8 +45,8 @@ func GetImageType(imageId string, confDb middleware.Db) (*ImageType, error) {
 	err = row.Scan(&imageType)
 	if err != nil {
 		logrus.Errorf("Unable to get image type %s", err.Error())
-		return nil, err
+		return "", err
 	}
 	imageTypeStruct.imageType = imageType
-	return &imageTypeStruct, nil
+	return imageTypeStruct.imageType, nil
 }

@@ -17,12 +17,6 @@ type RequestImage struct {
 	Uri string `json:"uri"`
 	ImageType string `json:"type"`
 }
-type ApiResponse struct {
-	Status int
-	Detail string
-	Title  string
-}
-
 func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if r.Body == nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -79,18 +73,4 @@ func SaveDataForTheImage(fileName string,  requestImage *RequestImage , config *
 	return nil
 }
 
-func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), response.Status)
-		return
-	}
-}
-func createResponse(detail, title string, status int) *ApiResponse {
-	return &ApiResponse{
-		Status: status,
-		Detail: detail,
-		Title:  title,
-	}
-}
+
