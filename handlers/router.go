@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"github.com/prog-image/middleware"
 	"github.com/sirupsen/logrus"
+	"os"
 )
 
 
@@ -46,4 +47,8 @@ func createResponse(detail, title string, status int) *ApiResponse {
 		Detail: detail,
 		Title:  title,
 	}
+}
+func GetLocalImageURL(config *middleware.Config, filename, fileType string) string{
+	hostName, _ := os.Hostname()
+	return fmt.Sprintf("Image URL: http://%s:%d/%s.%s",hostName, config.Prog.Port, filename, fileType)
 }

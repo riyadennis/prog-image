@@ -40,9 +40,8 @@ func GetImageHandler(w http.ResponseWriter, req *http.Request, params httprouter
 		http.Error(w, "Unable to process the request", http.StatusBadRequest)
 		return
 	}
-	imageName := fmt.Sprintf("%s.%s", requestImageId, imageType)
 	//detail for get requests with out conversion
-	detail := fmt.Sprintf("Image URL: http://localhost:8080/%s", imageName)
+	detail := fmt.Sprintf("Image URL: %s",GetLocalImageURL(config, requestImageId, imageType))
 	if requestImageType != "" {
 		err = CreateNewImageForImageType(requestImageId, requestImageType, imageType, config)
 		if err != nil {
@@ -51,7 +50,7 @@ func GetImageHandler(w http.ResponseWriter, req *http.Request, params httprouter
 			return
 		}
 		// detail for get request with conversion
-		detail = fmt.Sprintf("Image URL: http://localhost:8080/%s.%s", requestImageId, requestImageType)
+		detail = fmt.Sprintf("Image URL: %s",GetLocalImageURL(config, requestImageId, requestImageType))
 	}
 
 	apiResponse := createResponse(detail, "Success", http.StatusOK)

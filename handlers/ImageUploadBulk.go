@@ -29,13 +29,13 @@ func UploadBulkHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	uploaded, err := ioutil.ReadAll(req.Body)
+	requestBody, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	uploadedImages := UploadedImages{}
-	err = json.Unmarshal(uploaded, &uploadedImages)
+	err = json.Unmarshal(requestBody, &uploadedImages)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -52,7 +52,7 @@ func UploadBulkHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 		return
 	}
 	if builkUploaded{
-		res := createResponse("All images uploaded successfully", "Success", http.StatusOK)
+		res := createResponse("All images requestBody successfully", "Success", http.StatusOK)
 		jsonResponseDecorator(res, w)
 	}
 }

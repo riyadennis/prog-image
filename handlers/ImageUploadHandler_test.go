@@ -55,7 +55,7 @@ func TestUploadHandlerInValidJsonRequestBody(t *testing.T) {
 	route := httprouter.New()
 	route.POST("/upload", UploadHandler)
 	route.ServeHTTP(rr, req.WithContext(ManageConfig(req)))
-	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }
 func TestUploadHandlerValidRequestBody(t *testing.T) {
 	json := `{

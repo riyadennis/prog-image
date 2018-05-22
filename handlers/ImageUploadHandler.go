@@ -6,8 +6,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"encoding/json"
 	"io/ioutil"
-	"github.com/prog-image/service"
-	"github.com/satori/go.uuid"
 	"fmt"
 	"github.com/prog-image/middleware"
 	"github.com/prog-image/models"
@@ -38,26 +36,22 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	filename := fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
-	image := service.NewImage(filename, requestImage.Uri, requestImage.ImageType)
-	created, err := image.CreateImage(config)
+	u := UploadHelper{}
+	filename := u.GetFileName()
+	uploaded, err := u.Upload(filename, requestImage.Uri, config, requestImage.ImageType)
 	if err != nil {
-		fmt.Printf("%v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if created == false {
-		w.Write([]byte("Unable to save the image"))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if uploaded {
+		err = SaveDataForTheImage(filename, &requestImage, config)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
-	err = SaveDataForTheImage(filename, &requestImage, config)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	imageStruct, err := models.GetImage(filename, config.Prog.Db)
-	responseDetail := fmt.Sprintf("Image Name: %s.%s",imageStruct.Id, image.ImageType)
-	res := createResponse(responseDetail, "Success", http.StatusOK)
+	detail := fmt.Sprintf("Image URL: %s", GetLocalImageURL(config, filename, requestImage.ImageType))
+	res := createResponse(detail, "Success", http.StatusOK)
 	jsonResponseDecorator(res, w)
 
 }
