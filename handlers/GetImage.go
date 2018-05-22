@@ -9,10 +9,11 @@ import (
 	"github.com/prog-image/service"
 	"github.com/pkg/errors"
 	"os"
-	"image/jpeg"
 	"io"
 	"image/png"
 	"github.com/sirupsen/logrus"
+	"image"
+	_ "image/jpeg"
 )
 
 func GetImageHandler(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
@@ -27,10 +28,12 @@ func GetImageHandler(w http.ResponseWriter, req *http.Request, params httprouter
 	imageType, err := models.GetImageType(requestImageId, config.Prog.Db)
 	if err != nil {
 		// will be a wrong image id
+		logrus.Errorf("Image type not found %s", err.Error())
 		http.Error(w, "Unable to process the request", http.StatusBadRequest)
 		return
 	}
 	imageName := fmt.Sprintf("%s.%s", requestImageId, imageType)
+	//detail for get requests with out conversion
 	detail := fmt.Sprintf("Image URL: http://localhost:8080/%s", imageName)
 	if requestImageType != "" {
 		err = CreateNewImageForImageType(requestImageId,requestImageType, imageType, config)
@@ -39,6 +42,7 @@ func GetImageHandler(w http.ResponseWriter, req *http.Request, params httprouter
 			http.Error(w, "Unable to process the request", http.StatusBadRequest)
 			return
 		}
+		// detail for get request with conversion
 		detail = fmt.Sprintf("Image URL: http://localhost:8080/%s.%s", requestImageId, requestImageType)
 	}
 
@@ -60,8 +64,8 @@ func CreateNewImageForImageType(requestImageId, requestImageType, existingImageT
 	if err != nil {
 		return err
 	}
-	if requestImageType == "png" && existingImageType == "jpg" {
-		err := convertJPGTOPNG(oldFile, newFile)
+	if requestImageType == "png" {
+		err := convertToPNG(newFile, oldFile)
 		if err != nil {
 			return err
 		}
@@ -69,14 +73,10 @@ func CreateNewImageForImageType(requestImageId, requestImageType, existingImageT
 
 	return nil
 }
-func convertJPGTOPNG(oldFile io.Reader, newFile io.Writer) (error) {
-	img, err := jpeg.Decode(oldFile)
+func convertToPNG(newFile io.Writer, oldFile io.Reader) error {
+	img, _, err := image.Decode(oldFile)
 	if err != nil {
 		return err
 	}
-	err = png.Encode(newFile, img)
-	if err != nil {
-		return err
-	}
-	return nil
+	return png.Encode(newFile, img)
 }

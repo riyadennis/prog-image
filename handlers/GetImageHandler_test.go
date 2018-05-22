@@ -4,14 +4,14 @@ import (
 	"testing"
 	"github.com/prog-image/middleware"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"fmt"
 )
 const testImage = "testfile"
 func TestCreateNewImageForInvalidImageType(t *testing.T) {
 	config := middleware.Config{}
-	imageName, err := CreateNewImageForImageType(testImage, "invaliderr", "png", &config)
+	err := CreateNewImageForImageType(testImage, "invaliderr", "png", &config)
 	assert.Error(t, err)
-	assert.Empty(t, imageName)
 }
 
 func TestCreateNewImageForValidImageTypeWithInvalidOldFile(t *testing.T) {
@@ -26,8 +26,8 @@ func TestCreateNewImageForValidImageTypeWithInvalidOldFile(t *testing.T) {
 		Prog:prog,
 	}
 	newFormat := "png"
-	imageName, err := CreateNewImageForImageType(testImage, newFormat, "jpg", &config)
-	expectedImageName := fmt.Sprintf("%s/%s.%s", config.Prog.Folder,testImage,  newFormat)
+	newFilePath := fmt.Sprintf("%s/%s.%s", prog.Folder, testImage, newFormat)
+	os.Remove(newFilePath)
+	err := CreateNewImageForImageType(testImage, newFormat, "jpg", &config)
 	assert.NoError(t, err)
-	assert.Equal(t, imageName, expectedImageName)
 }
