@@ -22,7 +22,7 @@ type Uploaded struct {
 	FileName string
 }
 type UploadedImages struct {
-	Images []*UploadedImage
+	Images []*RequestImage
 }
 
 func UploadBulkHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {

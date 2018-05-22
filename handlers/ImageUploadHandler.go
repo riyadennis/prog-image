@@ -13,7 +13,7 @@ import (
 	"github.com/prog-image/models"
 )
 
-type UploadedImage struct {
+type RequestImage struct {
 	Uri string `json:"uri"`
 }
 type ApiResponse struct {
@@ -32,7 +32,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	uploadedImage := UploadedImage{}
+	uploadedImage := RequestImage{}
 	err = json.Unmarshal(uploaded, &uploadedImage)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

@@ -84,8 +84,8 @@ func TestBulkUploadWithInvalidImagesSlice(t *testing.T) {
 	assert.Error(t, err)
 }
 func TestBulkUploadWithValidImageSlice(t *testing.T) {
-	uImage := make([]*UploadedImage, 1)
-	uImage[0] = &UploadedImage{
+	uImage := make([]*RequestImage, 1)
+	uImage[0] = &RequestImage{
 		Uri: "https://cdn.flowercompany.ca/wp-content/uploads/2017/01/My-Heart-to-Yours-497x600.jpg",
 	}
 	images := UploadedImages{Images: uImage}
