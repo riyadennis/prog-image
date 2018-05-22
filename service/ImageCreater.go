@@ -44,14 +44,14 @@ func (i Image) CreateImage() (bool, error) {
 	defer img.Close()
 	return getContentAndCopy(i.Source, img)
 }
-func validateFileInfo(path, fileName,fileTYpe string) (string) {
-	fileNameWithPath := fmt.Sprintf("%s/%s.%s", path, fileName, fileTYpe)
+func validateFileInfo(path, fileName,fileType string) (string) {
+	fileNameWithPath := fmt.Sprintf("%s/%s.%s", path, fileName, fileType)
 	if validatePath(path) == false {
 		logrus.Errorf("Invalid file path %s", path)
 		return ""
 	}
-	if validateFileType(fileTYpe) == false {
-		logrus.Errorf("Invalid file Name %s", fileName)
+	if validateFileType(fileType) == false {
+		logrus.Errorf("Invalid file type %s", fileName)
 		return ""
 	}
 	return fileNameWithPath

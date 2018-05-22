@@ -8,7 +8,6 @@ import (
 	"github.com/prog-image/middleware"
 	"github.com/sirupsen/logrus"
 	"github.com/prog-image/service"
-	"github.com/prog-image/models"
 	"fmt"
 	"github.com/satori/go.uuid"
 	"github.com/pkg/errors"
@@ -67,9 +66,9 @@ func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) (b
 		if err != nil {
 			return false, err
 		}
-		err =  models.SaveImage(fileName, image.Uri, config.Prog.Db)
+		err = SaveDataForTheImage(fileName, image, config)
 		if err != nil {
-			return false, err
+			return false, nil
 		}
 		if uploaded {
 			logrus.Infof("Successfully uploaded from url %s, with filename %s",image.Uri, fileName)

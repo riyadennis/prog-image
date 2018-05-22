@@ -56,7 +56,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		w.Write([]byte("Unable to save the image"))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	err =  models.SaveImage(filename, requestImage.Uri, config.Prog.Db)
+	err = SaveDataForTheImage(filename, &requestImage, config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -66,6 +66,17 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	res := createResponse(responseDetail, "Success", http.StatusOK)
 	jsonResponseDecorator(res, w)
 
+}
+func SaveDataForTheImage(fileName string,  requestImage *RequestImage , config *middleware.Config) (error){
+	err :=  models.SaveImage(fileName, requestImage.Uri, config.Prog.Db)
+	if err != nil {
+		return err
+	}
+	err = models.SaveImageType(fileName, requestImage.ImageType, config.Prog.Db)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter) {

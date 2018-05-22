@@ -92,4 +92,7 @@ func setUpTestDB(db middleware.Db){
 	dbConnec, _ := models.InitDB(db)
 	statement, _ := dbConnec.Prepare("CREATE TABLE IF NOT EXISTS  images(id varchar(100) NOT NULL PRIMARY KEY,source varchar(100),imageType varchar(200),InsertedDatetime DATETIME);")
 	statement.Exec()
+
+	statementImagetType, _ := dbConnec.Prepare("CREATE TABLE IF NOT EXISTS image_types(id varchar(100) NOT NULL,image_type varchar(100) NOT NULL ,InsertedDatetime DATETIME);")
+	statementImagetType.Exec()
 }

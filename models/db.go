@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/prog-image/middleware"
 	"fmt"
+	"time"
 )
 
 func InitDB(db middleware.Db) (*sql.DB, error) {
@@ -21,3 +22,6 @@ func InitDB(db middleware.Db) (*sql.DB, error) {
 	return dbConnector, nil
 }
 
+func getCurrentTimeStamp() string {
+	return time.Now().Format("2006-01-02 15:04:05")
+}

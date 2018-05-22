@@ -4,7 +4,6 @@ import (
 	"github.com/prog-image/middleware"
 	"github.com/sirupsen/logrus"
 	"github.com/prog-image/service"
-	"time"
 )
 
 const tableName = "images"
@@ -15,8 +14,7 @@ func SaveImage(filename, uri string, confDb middleware.Db) (error) {
 		logrus.Errorf("Unable to save image details %s", err.Error())
 		return err
 	}
-	ts := time.Now().Format("2006-01-02 15:04:05")
-	query := "INSERT INTO " + tableName + "(id,source,InsertedDatetime) VALUES('" + filename + "', '" + uri + "' , '"+ts+"')"
+	query := "INSERT INTO " + tableName + "(id,source,InsertedDatetime) VALUES('" + filename + "', '" + uri + "' , '"+getCurrentTimeStamp()+"')"
 	res, err := db.Exec(query)
 	if err != nil {
 		logrus.Errorf("Unable to save image details %s", err.Error())
