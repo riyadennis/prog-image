@@ -59,7 +59,8 @@ func TestUploadBulkHandlerWithValidRequestBody(t *testing.T) {
 }
 func TestUploaded_UploadInvalidFileAndPath(t *testing.T) {
 	u := Uploaded{}
-	uploaded, err := u.Upload("test", "test", "invalid", "jpg")
+	config := &middleware.Config{}
+	uploaded, err := u.Upload("test", "test", config, "jpg")
 	assert.Error(t, err)
 	assert.False(t, uploaded)
 }
@@ -69,8 +70,8 @@ type MockUploader struct {
 	FileName string
 }
 
-func (m MockUploader) Upload(filename, url, path, imageType string) (bool, error) {
-	args := m.Called(filename, url, path)
+func (m MockUploader) Upload(filename, url string, config *middleware.Config, imageType string) (bool, error) {
+	args := m.Called(filename, url, config)
 	return args.Bool(0), args.Error(1)
 }
 func (m MockUploader) GetFileName() (string) {
@@ -91,11 +92,6 @@ func TestBulkUploadWithValidImageSlice(t *testing.T) {
 		Uri: "https://cdn.flowercompany.ca/wp-content/uploads/2017/01/My-Heart-to-Yours-497x600.jpg",
 		ImageType: "jpg",
 	}
-	images := UploadedImages{Images: uImage}
-	m := MockUploader{}
-	m.FileName = "testfile"
-	m.On("Upload", "testfile", uImage[0].Uri, "path").Return(true, nil)
-	m.On("GetFileName").Return("testfile")
 	db := middleware.Db{Source: testDbName, Type: "sqlite3"}
 	conf := &middleware.Config{
 		Prog: middleware.Prog{
@@ -103,6 +99,13 @@ func TestBulkUploadWithValidImageSlice(t *testing.T) {
 			Db:     db,
 		},
 	}
+
+	images := UploadedImages{Images: uImage}
+	m := MockUploader{}
+	m.FileName = "testfile"
+	m.On("Upload", "testfile", uImage[0].Uri, conf).Return(true, nil)
+	m.On("GetFileName").Return("testfile")
+
 	setUpTestDB(db)
 	uploaded, err := BulkUpload(m, images, conf)
 	os.Remove(testDbName)

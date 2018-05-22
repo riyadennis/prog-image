@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"time"
+	"github.com/prog-image/middleware"
 )
 
 type ImageCreator interface {
@@ -16,23 +17,21 @@ type ImageCreator interface {
 
 type Image struct {
 	Id       string
-	Path     string
 	Source   string
 	ImageType        string
 	InsertedDatetime time.Time
 }
 
-func NewImage(path, fileName, source, imageType string) (*Image) {
+func NewImage(fileName, source, imageType string) (*Image) {
 	return &Image{
-		Path:     path,
 		Id: fileName,
 		Source:   source,
 		ImageType: imageType,
 	}
 }
 
-func (i Image) CreateImage() (bool, error) {
-	fileNameWithPath := validateFileInfo(i.Path, i.Id, i.ImageType)
+func (i Image) CreateImage(config *middleware.Config) (bool, error) {
+	fileNameWithPath := validateFileInfo(config.Prog.Folder, i.Id, i.ImageType, config)
 
 	if fileNameWithPath == "" {
 		return false, errors.New("Invalid file or path")
@@ -44,13 +43,13 @@ func (i Image) CreateImage() (bool, error) {
 	defer img.Close()
 	return getContentAndCopy(i.Source, img)
 }
-func validateFileInfo(path, fileName,fileType string) (string) {
+func validateFileInfo(path, fileName,fileType string, config *middleware.Config) (string) {
 	fileNameWithPath := fmt.Sprintf("%s/%s.%s", path, fileName, fileType)
 	if validatePath(path) == false {
 		logrus.Errorf("Invalid file path %s", path)
 		return ""
 	}
-	if validateFileType(fileType) == false {
+	if ValidateFileType(fileType, config) == false {
 		logrus.Errorf("Invalid file type %s", fileName)
 		return ""
 	}
@@ -86,13 +85,14 @@ func getContentAndCopy(source string, img *os.File) (bool, error) {
 	return true, nil
 }
 
-func validateFileType(fileType string) (bool) {
-	//TODO need to add other file types from config
-	if fileType != "jpg" {
-		return false
+func ValidateFileType(fileType string, config *middleware.Config) (bool) {
+	allowedTypes := config.Prog.FileType
+	for _, t := range allowedTypes{
+		if fileType == t {
+			return true
+		}
 	}
-
-	return true
+	return false
 }
 func validatePath(path string) (bool) {
 	stat, err := os.Stat(path)

@@ -77,10 +77,13 @@ func TestUploadHandlerValidRequestBody(t *testing.T) {
 }
 func ManageConfig(req *http.Request) (context.Context){
 	db := middleware.Db{Source: testDbName, Type: "sqlite3"}
+	allowedFileTypes := make([]string, 1)
+	allowedFileTypes[0] = "jpg"
 	prog := middleware.Prog{
 		Port: 8080,
 		Folder: "../images",
 		Db: db,
+		FileType: allowedFileTypes,
 	}
 	config := middleware.Config{
 		Prog: prog,
