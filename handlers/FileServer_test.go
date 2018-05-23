@@ -20,6 +20,7 @@ func TestFileServer(t *testing.T) {
 	route := httprouter.New()
 	fileConf := &FileConf{
 		path: "../images",
+		fileType: "jpg",
 	}
 	route.NotFound = fileConf.FileServer
 	route.ServeHTTP(rr, req)

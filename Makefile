@@ -7,7 +7,7 @@ deps: clean
 	glide install
 
 test:
-	go test -timeout=5s -cover -race $$(glide novendor) -v
+	go test -timeout=5s -cover -race $$(glide novendor)
 
 run:
 	go run $(GOFILES) server
