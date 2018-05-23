@@ -12,6 +12,9 @@ test:
 run:
 	go run $(GOFILES) server
 
+build:
+	go build -o $(GOPATH)/bin/prog-image $(GOFILES)
+
 migrate:
 	go run main.go migrate up
 
