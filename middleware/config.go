@@ -55,13 +55,13 @@ func GetConfigFromContext(ctx context.Context) (*Config, error){
 	config, ok := ctx.Value(ContextKey).(Config)
 
 	if !ok {
-		config, err := GetConfig()
+		config, err := GetConfig(DefaultConfigPath)
 		return config, err
 	}
 	return &config, nil
 }
-func GetConfig() (*Config, error) {
-	file, err := os.Open(DefaultConfigPath)
+func GetConfig(configPath string) (*Config, error) {
+	file, err := os.Open(configPath)
 	if err != nil{
 		return nil, err
 	}
@@ -72,9 +72,8 @@ func GetConfig() (*Config, error) {
 	}
 	return config, err
 }
-func ConfigMiddleWare(next http.Handler) http.Handler {
+func ConfigMiddleWare(next http.Handler, config *Config) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		config, _ := GetConfig()
 		newCtx := context.WithValue(r.Context(),ContextKey, config)
 		next.ServeHTTP(w, r.WithContext(newCtx))
 	})

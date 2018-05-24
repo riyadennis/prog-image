@@ -30,7 +30,7 @@ func Run(config *middleware.Config) {
 
 	addr := fmt.Sprintf(":%d", config.Prog.Port)
 	fmt.Printf("Listenning to port %s \n", addr)
-	logrus.Fatal(http.ListenAndServe(addr, middleware.ConfigMiddleWare(route)))
+	logrus.Fatal(http.ListenAndServe(addr, middleware.ConfigMiddleWare(route, config)))
 }
 
 func jsonResponseDecorator(response *ApiResponse, w http.ResponseWriter) {

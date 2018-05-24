@@ -16,7 +16,7 @@ build:
 	go build -o $(GOPATH)/bin/prog-image $(GOFILES)
 
 migrate:
-	go run main.go migrate up
+	go run main.go -migrate=up
 
 migrate_down:
-	go run main.go migrate down
+	go run main.go -migrate=down
