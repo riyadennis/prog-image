@@ -10,7 +10,7 @@ test:
 	go test -timeout=5s -cover -race $$(glide novendor)
 
 run:
-	go run $(GOFILES) server
+	go run $(GOFILES) server -config="config.yaml"
 
 build:
 	go build -o $(GOPATH)/bin/prog-image $(GOFILES)

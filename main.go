@@ -10,6 +10,7 @@ import (
 	"flag"
 	"os"
 	"github.com/prog-image/cmd"
+	"fmt"
 )
 
 func main() {
@@ -21,8 +22,15 @@ func main() {
 	if err != nil {
 		logrus.Errorf("Unable to fetch config %s", err.Error())
 	}
-	cmd.ExecuteCommand(*migrateFlag, config)
-	os.Exit(0)
+	if len(os.Args) < 2 {
+		fmt.Printf("Please enter an option")
+		os.Exit(1)
+	}
+	if os.Args[1] == "-migrate=up"  ||  os.Args[1] == "-migrate=down"{
+		cmd.ExecuteCommand(*migrateFlag, config)
+		os.Exit(0)
+	}
+
 
 	handlers.Run(config)
 }
