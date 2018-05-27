@@ -46,47 +46,53 @@ func UploadBulkHandler(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 		return
 	}
 	u := UploadHelper{}
-	builkUploaded, err := BulkUpload(u, uploadedImages, config)
+	imageDetails, err := BulkUpload(u, uploadedImages, config)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if builkUploaded{
-		res := createResponse("All images requestBody successfully", "Success", http.StatusOK)
+	if len(imageDetails) > 0 {
+		details := ""
+		for _, md := range imageDetails{
+			details += fmt.Sprintf(" %s ", md)
+		}
+		res := createResponse(details, "Success", http.StatusOK)
 		jsonResponseDecorator(res, w)
 	}
 }
-func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) (bool, error){
-	if len(images.Images) < 1{
-		return false, errors.New("Invalid images")
+func BulkUpload(u Uploader, images UploadedImages, config *middleware.Config) ([]string, error) {
+	if len(images.Images) < 1 {
+		return nil, errors.New("Invalid images")
 	}
-	for _, image := range images.Images{
+	imageDetails := make([]string, len(images.Images))
+	for i, image := range images.Images {
 		fileName := u.GetFileName()
 		uploaded, err := u.Upload(fileName, image.Uri, config, image.ImageType)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		err = SaveDataForTheImage(fileName, image, config)
 		if err != nil {
-			return false, nil
+			return nil, nil
 		}
 		if uploaded {
-			logrus.Infof("Successfully uploaded from url %s, with filename %s",image.Uri, fileName)
+			logrus.Infof("Successfully uploaded from url %s, with filename %s", image.Uri, fileName)
 		}
+		imageDetails[i] = GetLocalImageURL(config, fileName, image.ImageType)
 		//clearing image struct
 		image = nil
 	}
-	return true, nil
+	return imageDetails, nil
 
 }
-func(u UploadHelper) GetFileName() string{
+func (u UploadHelper) GetFileName() string {
 	return fmt.Sprintf("%s", uuid.Must(uuid.NewV1(), nil))
 }
-func (u UploadHelper) Upload(filename,url string, config *middleware.Config, imageType string) (bool, error) {
+func (u UploadHelper) Upload(filename, url string, config *middleware.Config, imageType string) (bool, error) {
 	image := service.NewImage(filename, url, imageType)
 	createdImage, err := image.CreateImage(config)
-	if err != nil || createdImage == false{
-		return false,err
+	if err != nil || createdImage == false {
+		return false, err
 	}
 	return true, nil
 }
