@@ -21,6 +21,7 @@ func ( fc *FileConf) FileServer(w http.ResponseWriter, r *http.Request) {
 
 	fullPath := fmt.Sprintf("%s/%s", fc.path, r.URL.Path)
 	f, err := os.Open(fullPath)
+	defer f.Close()
 	if err != nil{
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Invalid file name"))

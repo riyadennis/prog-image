@@ -23,14 +23,13 @@ func main() {
 		logrus.Errorf("Unable to fetch config %s", err.Error())
 	}
 	if len(os.Args) < 2 {
-		fmt.Printf("Please enter an option")
+		fmt.Println("Please enter an option")
 		os.Exit(1)
 	}
-	if os.Args[1] == "-migrate=up"  ||  os.Args[1] == "-migrate=down"{
+	if os.Args[1] == "-migrate=up" || os.Args[1] == "-migrate=down" {
 		cmd.ExecuteCommand(*migrateFlag, config)
 		os.Exit(0)
 	}
-
 
 	handlers.Run(config)
 }
