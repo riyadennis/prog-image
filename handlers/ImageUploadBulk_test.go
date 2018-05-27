@@ -83,7 +83,7 @@ func TestBulkUploadWithInvalidImagesSlice(t *testing.T) {
 	images := UploadedImages{}
 	conf := &middleware.Config{}
 	uploaded, err := BulkUpload(m, images, conf)
-	assert.False(t, uploaded)
+	assert.Empty(t, uploaded)
 	assert.Error(t, err)
 }
 func TestBulkUploadWithValidImageSlice(t *testing.T) {
@@ -109,6 +109,6 @@ func TestBulkUploadWithValidImageSlice(t *testing.T) {
 	setUpTestDB(db)
 	uploaded, err := BulkUpload(m, images, conf)
 	os.Remove(testDbName)
-	assert.True(t, uploaded)
+	assert.NotEmpty(t, uploaded)
 	assert.NoError(t, err)
 }
