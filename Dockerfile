@@ -36,4 +36,4 @@ RUN go build -i -o prog-image .
 
 EXPOSE 8080
 
-ENTRYPOINT ./prog-image server config.yaml
+ENTRYPOINT ./prog-image server -config=config.yaml
