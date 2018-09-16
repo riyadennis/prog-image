@@ -20,3 +20,7 @@ migrate:
 
 migrate_down:
 	go run main.go -migrate=down
+
+docker:
+	docker build -t prog-image .
+	docker run -d --name prog1 -p 8080:8080 prog-image
